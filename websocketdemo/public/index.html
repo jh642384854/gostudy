@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>jh websocket demo</title>
+</head>
+<body>
+    <h1>jh websocket demo</h1>
+    <div id="app">
+        <div class="message" v-if="hasLogin">
+            <div class="messagelist">
+                <div class="signal_msg" v-for="item in messages">
+                    <span><b>{{ item.email }}</b></span>--:--<span>{{ item.msg }}</span>
+                </div>
+            </div>
+            <div class="messageForm">
+                <table>
+                    <tr>
+                        <td><textarea name="content" id="content" v-model="content" cols="30" rows="10"></textarea></td>
+                        <td><input type="button" @click="sendMessage" value="send message"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="login" v-if="!hasLogin">
+            <table>
+                <tr>
+                    <td>Email:</td>
+                    <td><input type="text" id="email" v-model="email"></td>
+                </tr>
+                <tr>
+                    <td>Username:</td>
+                    <td><input type="text" id="email" v-model="username"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="button" @click="join" value="join chat"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var app = new Vue({
+            el : '#app',
+            data:{
+                ws:'',
+                message :'hello vue',
+                hasLogin: false,
+                email:'',
+                username:'',
+                content:'',
+                messages:[]
+            },
+            created:function(){
+                this.ws = new WebSocket("ws://localhost:8090/ws");
+                var _this = this
+                this.ws.onopen = function(){
+                    _this.ws.send(JSON.stringify({
+                        email:'admin@qq.com',
+                        username:'admin',
+                        msg:'this is a test message'
+                    }))
+                }
+                this.ws.onmessage = function(event){
+                    var data = event.data;
+                    _this.messages.unshift(JSON.parse(data))
+                }
+            },
+            methods:{
+                //加入聊天室
+                join:function(){
+                    if (this.email != "" && this.username != ""){
+                        this.hasLogin = true;
+                    }else{
+                        alert('请输入email和用户名');
+                    }
+                },
+                //发送消息
+                sendMessage:function(){
+                    var _this = this
+                    this.ws.send(JSON.stringify({
+                        email:_this.email,
+                        username:_this.username,
+                        msg:_this.content
+                    }))
+                    this.content = ''
+                }
+            }
+        });
+    </script>
+</body>
+</html>

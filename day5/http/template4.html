@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <div>the dot is {{ . }}</div>
+    <div>
+        {{ with "world" }}
+            now the dot is set to {{ . }}
+        {{ end }}
+    </div>
+    <div>the dot is {{ . }} again</div>
+</body>
+</html>

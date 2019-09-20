@@ -1,0 +1,53 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {},
+        "license": {}
+    },
+    "paths": {
+        "/api/users": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取所有用户",
+                "responses": {
+                    "200": {
+                        "description": "{\"RetCode\":0,\"UserInfo\":{},\"Action\":\"GetAllUserResponse\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/{name}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取单个用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"RetCode\":0,\"UserInfo\":{},\"Action\":\"GetOneUserResponse\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

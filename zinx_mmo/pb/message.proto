@@ -1,0 +1,42 @@
+syntax = "proto3";                //proto协议版本
+package pb;                       //当前包名
+option csharp_namespace = "Pb";    //给C#提供的选项
+
+//同步玩家ID
+message SyncPid{
+    int32 Pid = 1;                //服务器新生成玩家ID
+}
+
+//位置信息
+message Position{
+    float X = 1;                   //玩家X轴坐标
+    float Y = 2;                   //玩家跳跃高度
+    float Z = 3;                   //玩家Y轴坐标
+    float V = 4;                   //玩家身体倾斜值
+}
+
+//广播消息
+message BroadCast{
+    int32 Pid = 1;                 //玩家ID
+    int32 Tp = 2;                  //广播消息类型  1:聊天消息  2:玩家位置  3:玩家动作  4:移动之后的坐标信息更新
+    oneof Data {
+        string Content = 3;        //玩家的聊天信息
+        Position P = 4;            //广播玩家的位置
+        int32 ActionData = 5;      //玩家具体的动作
+    }
+}
+
+//聊天信息
+message Talk{
+    string Content = 1;              //玩家聊天信息内容
+}
+
+//同步玩家的显示数据
+message SyncPlayers{
+    repeated Player Players = 1;      //玩家列表信息
+}
+
+message Player{
+    int32 Pid = 1;                     //玩家ID
+    Position Position = 2;             //位置信息
+}

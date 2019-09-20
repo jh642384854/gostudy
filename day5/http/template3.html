@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+    {{ range . }}
+        <li>{{ . }}</li>
+    {{ else }}
+        nothing
+    {{ end }}
+    </ul>
+    <ul>
+        {{ range $key,$val := . }}
+            <li>the key is {{ $key }} and the value is {{ $val }}</li>
+        {{ else }}
+            nothing
+        {{ end }}
+    </ul>
+</body>
+</html>

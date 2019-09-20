@@ -1,0 +1,33 @@
+info:
+  contact: {}
+  license: {}
+paths:
+  /api/users:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"RetCode":0,"UserInfo":{},"Action":"GetAllUserResponse"}'
+          schema:
+            type: string
+      summary: 获取所有用户
+  /api/users/{name}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"RetCode":0,"UserInfo":{},"Action":"GetOneUserResponse"}'
+          schema:
+            type: string
+      summary: 获取单个用户
+swagger: "2.0"

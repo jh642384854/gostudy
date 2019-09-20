@@ -1,0 +1,7 @@
+{
+  "ServerName": "zinx Server framwork",
+  "Host": "127.0.0.1",
+  "Port": 9898,
+  "MaxBuffer": 2048,
+  "Version": "v0.4"
+}
