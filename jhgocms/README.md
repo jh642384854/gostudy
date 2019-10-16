@@ -1,2 +1,0 @@
-# jhgocms
-go cms

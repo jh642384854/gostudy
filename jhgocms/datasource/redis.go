@@ -1,5 +1,0 @@
-package datasource
-
-func NewRedis() {
-
-}

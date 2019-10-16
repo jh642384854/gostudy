@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	config2 "gin_demo/8.viper/config"
+	config2 "dev/gin_demo/8.viper/config"
 	"github.com/Unknwon/goconfig"
 	"github.com/spf13/viper"
 	"os"
