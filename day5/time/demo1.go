@@ -72,5 +72,5 @@ func demo5()  {
 }
 
 func main() {
-	demo4()
+	demo1()
 }
