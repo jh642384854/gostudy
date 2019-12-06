@@ -1,0 +1,65 @@
+1.func (ch *Channel) Nack(tag uint64, multiple bool, requeue bool) error
+Nack通过它的传递标签否定了传递。请使用此方法通知服务器您无法处理此传递，必须重新传递或删除此传递。
+参见Delivery.Nack
+
+2.func (ch *Channel) NotifyCancel(c chan string) chan string
+NotifyCancel为basic注册一个监听器。取消方法。这些数据可以在删除队列时从服务器发送，也可以在主队列刚刚失败(并被移动到另一个节点)的镜像队列中使用。
+订阅标记返回给侦听器。
+
+3.func (ch *Channel) NotifyClose(c chan *Error) chan *Error
+当服务器以连接的形式发送通道或连接异常时，NotifyClose注册一个侦听器。关闭或通道。关闭方法。连接异常将广播到所有打开的通道，所有通道将关闭，其中通道异常将仅广播到此通道的侦听器。
+当通道关闭时，所提供的chan将被关闭，在一个优美的关闭状态下，不会发送任何错误。
+
+4.func (ch *Channel) NotifyConfirm(ack, nack chan uint64) (chan uint64, chan uint64)
+调用NotifyPublish并启动goroutine，向相应的通道发送已订购的Ack和Nack DeliveryTag。
+对于严格的排序，可以使用NotifyPublish。
+
+5.func (ch *Channel) NotifyFlow(c chan bool) chan bool
+NotifyFlow为basic注册一个监听器。由服务器发送的流方法。当“false”在一个侦听器通道上发送时，所有发布者都应该暂停，直到发送“true”为止。
+服务器可以要求生产者暂停或重新启动发布流发送的频道。这是一个简单的流控制机制，服务器可以使用它来避免队列溢出，或者发现自己接收到的消息比处理的多。请注意，此方法不用于窗口控制。它不影响basic返回的内容。get-ok方法。
+当打开一个新通道时，它是活动的(流是活动的)。一些应用程序假设通道在启动之前是不活动的。为了模拟这种行为，客户机可以打开通道，然后暂停它。
+发布者应该尽可能快地响应流消息，服务器可能会在不尊重这些消息的生成通道上断开连接。
+基本的。无论侦听器的数量如何，flow-ok方法都将始终返回给服务器。
+要控制来自服务器的交付流，可以使用Channel.Flow()方法。
+注意:RabbitMQ更愿意在网络连接上使用TCP推送，而不是发送basic.flow。这意味着，如果单个通道在同一连接上产生了过多的信息，那么使用该连接的所有通道都会受到影响，包括来自交付的确认。如果您希望在同一过程中交错使用消费者和生产者，请使用不同的连接来避免基本连接。从你的基本得到限制的速率的ack消息。发布消息。
+
+6.func (ch *Channel) NotifyPublish(confirm chan Confirmation) chan Confirmation
+NotifyPublish为可靠的发布注册一个监听器。从这个chan接收每个发布后的频道。确认从DeliveryTag 1开始。
+将有一个且只有一个确认发布，从交付标记1开始，并按顺序进行，直到服务器看到发布的总数为止。
+确认信息将按NotifyPublish通道的发送顺序接收，即使服务器确认它们的顺序错误。
+侦听器chan将在通道关闭时关闭。
+chan确认的容量必须至少与未发表文章的数量一样大。当确认正在运行时，如果您试图在连接或通道上执行其他操作，则没有足够的缓冲区chans将创建死锁。
+建议在调用Channel.Close()或Connection.Close()之前等待所有确认信息到达。
+
+7.func (ch *Channel) NotifyReturn(c chan Return) chan Return
+NotifyReturn为basic注册一个监听器。回报的方法。当发布无法从mandatory或immediate标志交付时，可以从服务器发送这些消息。
+返回结构具有发布的副本以及关于发布失败原因的一些错误信息。
+
+8.func (ch *Channel) Confirm(noWait bool) error
+确认将此通道置于确认模式，以便客户端能够确保服务器已成功接收所有的发布。进入此模式后，服务器将发送一个basic.ack或basic.nack消息，其传递标记设置为基于1的增量索引，该索引对应于该方法返回后收到的每个发布。
+向Channel添加侦听器。NotifyPublish响应确认。如果通道。未调用NotifyPublish，确认将被忽略。
+确认订单不受发货订单的约束。
+Ack和Nack确认将在将来的某个时候到达。
+不可路由的强制或即时消息在任何通道之后立即得到确认。已通知NotifyReturn监听器。当所有应该将消息路由到其上的队列都已收到发送确认，或已将消息加入队列(必要时将消息持久化)时，将确认其他消息。
+当noWait为真时，客户机将不会等待响应。如果服务器不支持此方法，可能会发生通道异常。
+
+
+9.func (d Delivery) Ack(multiple bool) error
+Ack通过确认接口确认客户端或服务器已经完成了交付的工作。
+所有AMQP内的交货必须得到确认。如果你叫频道。如果使用autoAck true，则服务器将自动对每个消息进行ack，不应调用此方法。否则，你必须打电话送货。在您成功地处理了此交付之后，请进行Ack。
+当multiple为真时，将确认此交付和之前同一通道上所有未确认的delivery(简单的说，就是如果设置为ture的话，这个队列的所有消息都会被自动确认)。这对于批量处理delivery非常有用。
+一个错误将表明确认无法传递到发送它的通道。
+对于没有自动确认的每个delivery，必须调用Delivery.Ack(), Delivery.Reject()或Delivery.Nack()的其中之一方法。
+
+10.func (d Delivery) Nack(multiple, requeue bool) error
+Nack拒绝确认来自客户机或服务器的传递标记标识的消息的传递。
+当多个为真时，nack消息直到并包括已交付的消息，直到交付标记在同一通道上交付。
+当requeue为真时，请求服务器将此消息传递给不同的使用者。如果不可能，或者requeue为假，则将消息删除或发送到配置为死信队列的服务器。
+此方法不能用于选择或请求客户端不希望处理的消息，而是通知服务器客户端此时无法处理此消息。
+对于没有自动确认的每个delivery，必须调用Delivery.Ack(), Delivery.Reject()或Delivery.Nack()的其中之一方法。
+
+11.func (d Delivery) Reject(requeue bool) error
+拒绝通过确认器接口委派一个否定的确认。
+当requeue为真时，将此消息排队传递到另一个通道上的使用者。当requeue为false或服务器无法对该消息进行排队时，将删除该消息。
+如果您正在批量处理交付，并且您的服务器支持它，那么最好使用Delivery.Nack()。
+对于没有自动确认的每个delivery，必须调用Delivery.Ack(), Delivery.Reject()或Delivery.Nack()的其中之一方法。
